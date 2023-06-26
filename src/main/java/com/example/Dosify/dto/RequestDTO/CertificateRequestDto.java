@@ -1,7 +1,6 @@
-package com.example.Dosify.dto.RequestDTO;
+package com.example.Dosify.dto.RequestDto;
 
 import com.example.Dosify.Enum.DoseNo;
-import com.example.Dosify.Enum.VaccineType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,16 +11,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-/**
- * some message
- */
-public class AppointmentRequestDto {
-
-    DoseNo doseNo;
-
+public class CertificateRequestDto {
     int userId;
 
-    int doctorId;
-
-    VaccineType vaccineType;
+    DoseNo doseNo;
 }

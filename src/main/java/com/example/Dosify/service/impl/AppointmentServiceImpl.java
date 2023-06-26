@@ -11,6 +11,7 @@ import com.example.Dosify.model.*;
 import com.example.Dosify.repository.DoctorRepository;
 import com.example.Dosify.repository.UserRepository;
 import com.example.Dosify.service.AppointmentService;
+import com.example.Dosify.service.CertificateService;
 import com.example.Dosify.service.Dose1Service;
 import com.example.Dosify.service.Dose2Service;
 import com.example.Dosify.transformer.VaccinationCenterTransformer;
@@ -37,6 +38,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     Dose2Service dose2Service;
+
+    @Autowired
+    CertificateService certificateService;
 
     @Autowired
     private JavaMailSender emailSender;
@@ -88,6 +92,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         doctorRepository.save(doctor);
 
         // send email
+        /*
         String text = "Congrats!!" + user.getName() + " Your dose "+ appointmentRequestDto.getDoseNo() + " has been booked!!";
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("backendmaydosify@gmail.com");
@@ -95,6 +100,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         message.setSubject("Appointment Booked !!!");
         message.setText(text);
         emailSender.send(message);
+         */
+
+        /*Create dose 1 certificate*/
+        if (user.isDose1Taken() && !user.isDose2Taken()){
+            dose1AppointmentMail(user.getName(),user.getEmailId(), savedAppointment.getId());
+            certificateService.createDoseCertificate(user, DoseNo.DOSE_1);
+        }
+        /*Create dose 1 certificate*/
+        if (user.isDose1Taken() && user.isDose2Taken()){
+            dose2AppointmentMail(user.getName(), user.getEmailId(), savedAppointment.getId());
+            certificateService.createDoseCertificate(user, DoseNo.DOSE_2);
+        }
 
 
         // prepare response dto
@@ -110,4 +127,34 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .vaccineType(appointmentRequestDto.getVaccineType())
                 .build();
     }
+
+    /*Dose 1 appointment mail*/
+
+    private void dose1AppointmentMail(String name, String emailId, int id) {
+        String text =  name +
+                " your 1st dose appointment is booked successfully and appointment number is " + id + ".\n" +
+                "no-reply this is automated generated mail.";
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("abdulecommerce@gmail.com");
+        message.setTo(emailId);
+        message.setSubject("Dosify COVID_19 Vaccination Center!!!");
+        message.setText(text);
+        emailSender.send(message);
+    }
+
+
+    /*Dose 2 appointment mail*/
+    private void dose2AppointmentMail(String name, String emailId, int id) {
+        String text =  name +
+                " your 2nd dose appointment is booked successfully and appointment number is " + id + ".\n" +
+                "no-reply this is automated generated mail.";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("abdulecommerce@gmail.com");
+        message.setTo(emailId);
+        message.setSubject("Dosify COVID_19 Vaccination Center!!!");
+        message.setText(text);
+        emailSender.send(message);
+    }
+    
 }
